@@ -1,0 +1,7 @@
+node_modules
+//remove node_modules
+dist
+//remove dist folder
+.env
+//remove environment variables file
+.DS_Store
