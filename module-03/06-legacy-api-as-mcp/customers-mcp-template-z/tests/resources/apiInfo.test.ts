@@ -27,5 +27,4 @@ describe('Customer Resources', () => {
             "Description should be correct"
         )
     })
-
 })

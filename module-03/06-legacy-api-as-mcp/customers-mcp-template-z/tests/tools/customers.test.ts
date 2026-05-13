@@ -2,9 +2,10 @@ import { describe, it, after, before } from 'node:test'
 import assert from 'node:assert'
 import { createTestClient } from '../helpers.ts'
 import { Client } from '@modelcontextprotocol/sdk/client'
-import { type Customer } from '../../src/domain/customer.ts'
+import { type CustomerMutation, type Customer } from '../../src/domain/customer.ts'
 
 type CustomerResult = { structuredContent: { customers: Customer[] } }
+type CustomerMutationResult = { structuredContent: CustomerMutation }
 
 describe('Customer MCP Suite', () => {
     let client: Client
@@ -25,6 +26,25 @@ describe('Customer MCP Suite', () => {
         assert.ok(
             Array.isArray(result.structuredContent.customers),
             'Should return an array of customers'
+        )
+    })
+
+    it('should create a customer', async () => {
+        const customer = {
+            name: "Jhon",
+            phone: "123456789"
+        }
+        const result = await client.callTool({
+            name: 'create_customer',
+            arguments: customer
+        }) as unknown as CustomerMutationResult
+
+        assert.ok(result.structuredContent.id,
+            'Should contain id'
+        )
+        assert.deepStrictEqual(
+            result.structuredContent.message,
+            `user ${customer.name} created!`,
         )
     })
 

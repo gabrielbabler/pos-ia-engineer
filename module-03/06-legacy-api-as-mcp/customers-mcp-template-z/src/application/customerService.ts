@@ -1,4 +1,4 @@
-import { type Customer } from "../domain/customer.ts";
+import { type CustomerMutation, type Customer } from "../domain/customer.ts";
 import { CustomerHttpClient } from "../infrastructure/customerHttpClient.ts";
 
 export class CustomerService {
@@ -9,5 +9,9 @@ export class CustomerService {
 
     async listCustomers(): Promise<Customer[]> {
         return this.client.listCustomers()
+    }
+
+    async createCustomer(customer: Omit<Customer, '_id'>): Promise<CustomerMutation> {
+        return this.client.createCustomer(customer)
     }
 }
