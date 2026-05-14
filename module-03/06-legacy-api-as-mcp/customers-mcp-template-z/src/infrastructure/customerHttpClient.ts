@@ -1,4 +1,4 @@
-import { type CustomerMutation, type Customer } from "../domain/customer.ts"
+import { type CustomerMutation, type Customer, type CustomerQuery } from "../domain/customer.ts"
 
 export class CustomerHttpClient {
     private baseUrl: string
@@ -18,5 +18,11 @@ export class CustomerHttpClient {
             body: JSON.stringify(customer),
         })
         return res.json() as Promise<CustomerMutation>
+    }
+
+    async getCustomerById(id: string): Promise<Customer | null> {
+        const res = await fetch(`${this.baseUrl}/customers/${id}`)
+        if (res.status === 404) return null
+        return res.json() as Promise<Customer>
     }
 }

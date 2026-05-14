@@ -1,27 +1,24 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import z from "zod";
 import { CustomerService } from "../../application/customerService.ts";
+import { type CustomerQuery, CustomerQuerySchema, CustomerSchema } from "../../domain/customer.ts";
 
-export function registerCreateCustomersTool(
+export function registerGetCustomersTool(
     server: McpServer,
     service: CustomerService
 ) {
     server.registerTool(
-        "create_customer",
+        "get_customer",
         {
-            description: "Create a customer",
-            inputSchema: {
-                name: z.string().describe('Full name of the customer'),
-                phone: z.string().describe('phone number of the customer')
-            },
+            description: "Find a customer by _id, name, or phone number",
+            inputSchema: CustomerQuerySchema,
             outputSchema: {
-                id: z.string().describe('MongoDB ObjectID of newerly created customer'),
-                message: z.string().describe('Confirmation message')
+                customer: CustomerSchema.nullable().describe('Customer details if found, otherwise null')
             }
         },
-        async ({ name, phone }) => {
+        async (query: CustomerQuery) => {
             try {
-                const customer = await service.createCustomer({ name, phone })
+                const customer = await service.findCustomer(query)
                 return {
                     content: [
                         {
@@ -29,7 +26,7 @@ export function registerCreateCustomersTool(
                             text: JSON.stringify(customer)
                         }
                     ],
-                    structuredContent: customer
+                    structuredContent: { customer }
                 }
             } catch (error) {
                 return {

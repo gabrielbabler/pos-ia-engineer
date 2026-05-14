@@ -12,7 +12,7 @@ describe('Customer MCP Suite', () => {
     before(async () => {
         client = await createTestClient()
     })
-    
+
     after(async () => {
         await client.close()
     })
@@ -48,4 +48,30 @@ describe('Customer MCP Suite', () => {
         )
     })
 
+    it('should create a customer', async () => {
+        const customer = {
+            name: "Jhon",
+            phone: "123456789"
+        }
+        
+        const { structuredContent: { id } } = await client.callTool({
+            name: 'create_customer',
+            arguments: customer
+        }) as unknown as CustomerMutationResult
+        
+        const result = await client.callTool({
+            name: 'get_customer',
+            arguments: {
+                name: "Jhon"
+            }
+        }) as unknown as CustomerMutationResult
+
+        assert.ok(result.structuredContent.customer?._id,
+            'Should contain id'
+        )
+        assert.deepStrictEqual(
+            result.structuredContent.customer.name,
+            customer.name,
+        )
+    })
 })
